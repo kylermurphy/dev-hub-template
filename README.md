@@ -12,11 +12,12 @@
 **dev-hub is mission control for every task across repos you track.** You decide which repos
 get tracked (`add-repo`) and you can add tasks yourself (`new-task`), or Claude finds them
 (`scan-repo` reads a repo and proposes what needs doing) and adds them to a repo-specific
-table hosted on the `dev-hub` task board. Name a task from anywhere, and Claude works it on a
-branch and hands back a PR for you to review. `dev-hub` is the source of truth for the task
-backlog, the working conventions, and each repo's instruction file. Claude works from here in
-the cloud (claude.ai/code) and on the machine (Claude Code), and all of it lands on GitHub as
-branches and PRs you review.
+table hosted on the `dev-hub` task board. 
+
+Name a task from anywhere, and Claude works it on a branch and hands back a PR for you to 
+review. `dev-hub` is the source of truth for the task backlog, the working conventions, 
+and each repo's instruction file. Claude works from here in the cloud (claude.ai/code) 
+and on the machine (Claude Code), and all of it lands on GitHub as branches and PRs you review.
 
 It holds no code, just three things:
 - **The task board**: every task across every tracked repo, each with an ID and a definition
