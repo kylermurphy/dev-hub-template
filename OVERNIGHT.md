@@ -28,10 +28,12 @@ thinking and web search (see Sources).
 - **Scope:** only **S / M** tasks overnight. L tasks need a decision from you — don't queue them.
 - **One task per run, or one `multi-task` batch** of up to 5 **S** tasks in the same repo
   (one branch, one PR). Don't let one session try to clear the whole board; that's how a
-  marathon session blows the weekly cap.
+  marathon session blows the weekly cap. An S/M **feature subtask** counts as one task
+  (`pickup-task <subtask ID>`); planning a feature (`plan-task <feature ID>`) needs you there.
 - **Finish early:** aim to wrap a few hours before your workday so the session window resets.
 - **Stop cleanly:** if you stop for budget, set Status `Usage-stopped` with a current
-  `Next step`; on a decision you can't make, set `Blocked`. Either way `pickup-task` resumes it.
+  `Next step`; on a **When to stop and ask** rule (dev-hub `CLAUDE.md`), set `Blocked` with the
+  question. Either way `pickup-task` resumes it.
 - **Where to run:** claude.ai/code with the target repo **and** dev-hub attached (both are
   written to), or Claude Code. A Claude Project (handback mode) can't push and stops for your
   PR confirmation before `mark-done`, so it doesn't suit unattended runs. The
@@ -52,16 +54,16 @@ thinking and web search (see Sources).
 
 ## Kick-off prompt (paste before bed)
 
-> Work on dev-hub task **<ID>** only (`plan-task <ID>`, unattended). Follow the task protocol
-> in dev-hub's `CLAUDE.md`. The target repo's `CLAUDE.md` is a copy of its dev-hub master with
-> a short summary; if the copy is missing or out of date, use dev-hub's. Branch
-> `task/<ID>-<slug>`, and **persist the plan to `log/<ID>.md` before doing heavy work**.
-> Commit and push as you go, and keep `log/<ID>.md` updated with **Status** and a **Next
-> step** after each step. If a `task/<ID>` branch or `log/<ID>.md` already exists, use
-> `pickup-task <ID>` and resume from Next step instead of restarting. If you hit an
-> irreversible or ambiguous decision, set Status `Blocked` and record it under
-> `## Blocked / open questions`. **If you stop for budget, set Status `Usage-stopped`.** Use
-> the cheapest model that can do this reliably.
+> Work on dev-hub task **<ID>** only: `run-task <ID>` (plan it yourself; don't wait for me).
+> Follow the task protocol in dev-hub's `CLAUDE.md`. The target repo's `CLAUDE.md` is a copy of
+> its dev-hub master with a short summary; if the copy is missing or out of date, use dev-hub's.
+> Branch `task/<ID>-<slug>`, and **persist the plan to `log/<ID>.md` before doing heavy work**,
+> naming who does each step. Commit and push as you go, and keep `log/<ID>.md` updated with
+> **Status** and a **Next step** after each step. If a `task/<ID>` branch or `log/<ID>.md`
+> already exists, use `pickup-task <ID>` and resume from Next step instead of restarting. If
+> you hit a **When to stop and ask** rule (dev-hub `CLAUDE.md`), set Status `Blocked` and
+> record the question under `## Blocked / open questions`. **If you stop for budget, set Status
+> `Usage-stopped`.** Use the cheapest model that can do this reliably.
 
 **Batch variant** (several S tasks, one PR):
 
@@ -69,8 +71,8 @@ thinking and web search (see Sources).
 > (the target repo's `CLAUDE.md` is only a copied summary; if it's missing or out of date, use
 > dev-hub's): one branch `task/<ID>+<ID>+…-<slug>` and one draft PR, a short plan per task
 > saved to each `log/<ID>.md` before the work, and commits prefixed with their task ID. If one
-> task hits a decision you can't make, revert it, set it `Blocked` with the question, and
-> finish the rest. If you stop for budget, set the unfinished tasks `Usage-stopped`. Use the
+> task hits a **When to stop and ask** rule (dev-hub `CLAUDE.md`), revert it, set it `Blocked`
+> with the question, and finish the rest. If you stop for budget, set the unfinished tasks `Usage-stopped`. Use the
 > cheapest model that can do this reliably.
 
 (With a repo name instead of IDs, `multi-task <repo>` takes Claude's proposed batch

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # repo_stats.sh — clone a repo and print the mechanical facts for the dev-hub Repo Overview.
-# Usage: scripts/repo_stats.sh <repo-url | owner/name | name>
+# Usage: bash scripts/repo_stats.sh <repo-url | owner/name | name>
 # Bare name defaults to github.com/$DEVHUB_OWNER/<name> (set DEVHUB_OWNER to your GitHub user/org).
 # No pipefail: several pipelines end in `head`/`grep -q`, which close the pipe early and
 # would otherwise trip `set -e` via SIGPIPE upstream.

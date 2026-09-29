@@ -64,7 +64,7 @@ what changed, then each mismatch with how to fix it:
 - Board maintenance `chore/` branch + PR → `wc/dev-hub/` + PR text (with the branch name).
 - `mark-done` merge check → the user's confirmation of the PR. Record it as
   `Done (PR confirmed <date>)` in `TASK_LOG.md` and as `(PR confirmed <date>)` on the log's
-  PR line. The board Status is `Done`.
+  PR line. The board Status is `🟢 Done` (icon + word, per `CLAUDE.md`).
 
 ## Finishing a task or maintenance command
 1. Show the changes and the `PR.md` / PR text. Ask the user to confirm the PR looks good.
