@@ -292,7 +292,7 @@ Projects; guide: `docs/PROJECTS.md`. Their edits go **straight to dev-hub `main`
 branch, log or board Status (in a branch-restricted session: the designated branch with an
 open PR, as for bookkeeping). Run `python3 scripts/check_board.py` before each commit.
 
-**Everyday edits need no command.** For example, "DENS log: …", "add a DENS todo: …" or "DENS
+**Everyday edits need no command.** For example, "HEAT log: …", "add a HEAT todo: …" or "HEAT
 decision: …" add to the right section (the log and plans newest first) and update
 `updated:`.
 

@@ -1,0 +1,19 @@
+# Runs dev-hub's check-board consistency checks (COMMANDS.md → check-board) on every PR and
+# on every push to main. A red run means the board, TASK_LOG.md and log/ disagree.
+name: check-board
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  check-board:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check the board
+        run: python3 scripts/check_board.py

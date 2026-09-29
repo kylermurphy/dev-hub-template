@@ -247,14 +247,14 @@ for the owner, and structured so agents can read it and plan from it. Guide: `do
 Commands: `new-project`, `plan-project`, `review-projects` (`COMMANDS.md`).
 
 - **Files.** Each project is `projects/<descriptive-name>.md` (lowercase with hyphens, e.g.
-  `thermosphere-density.md`), made from `projects/TEMPLATE.md`. `projects/INDEX.md` is the
+  `urban-heat-islands.md`), made from `projects/TEMPLATE.md`. `projects/INDEX.md` is the
   portfolio, with one row per project.
 - **IDs.**
-  - Each project has a short uppercase ID in its metadata (`id: DENS`): 2–8 capital letters or
+  - Each project has a short uppercase ID in its metadata (`id: HEAT`): 2–8 capital letters or
     digits, unique, and never a tracked repo's prefix without its hyphen.
   - Inside a project: goals `G1`, objectives `O1`, work packages `WP1.1` (objective 1,
     package 1).
-  - IDs never change and are never reused. Refer to another project's work as `DENS WP1.2`.
+  - IDs never change and are never reused. Refer to another project's work as `HEAT WP1.2`.
 - **The structure is fixed.** The metadata block and the `##` sections stay in the template's
   order, with one `### O<n> — …` subheading and one work-package table per objective.
   `check-board` checks this. Work-package statuses are `⏩ Todo` · `🟠 WIP` · `‼️ Blocked` ·
