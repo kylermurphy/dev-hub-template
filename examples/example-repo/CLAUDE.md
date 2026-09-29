@@ -46,9 +46,11 @@ board row alone.
 - **Branch** `task/<ID>-<slug>` off the default branch; never commit to `main`.
 - **First commit:** sync this file from its dev-hub master
   (`repos/example-repo/CLAUDE.md`). Edit instructions in the master, never here.
-- **Plan** saved to dev-hub `log/<ID>.md` before heavy work (`plan-task <ID>`); a `plan <ID>`
-  dry run saves nothing. **Draft PR** following dev-hub's `templates/PULL_REQUEST_TEMPLATE.md`
-  (not copied here): ID, what, why, how tested, DoD check.
+- **Plan** saved to dev-hub `log/<ID>.md` before heavy work, naming who does each step (main
+  model or a subagent). `plan-task <ID>` discusses it and **waits for the owner's go**;
+  `run-task <ID>` plans and runs without waiting, stopping only under dev-hub `CLAUDE.md` →
+  When to stop and ask. A `plan <ID>` dry run saves nothing. **Draft PR** following dev-hub's
+  `templates/PULL_REQUEST_TEMPLATE.md` (not copied here): ID, what, why, how tested, DoD check.
 - **Bookkeeping** (`log/<ID>.md`, `TASK_LOG.md` row, board Status → `WIP`) goes straight to
   dev-hub `main`. In a branch-restricted session it goes to the designated branch with an
   open PR instead (say so in chat; never merge it yourself). Only `mark-done <ID>` sets `Done`.
@@ -58,6 +60,10 @@ board row alone.
   `task/<ID>+<ID>+…-<slug>` and one PR for up to 5 simple tasks; each keeps its own log, and
   commits are prefixed with their ID. A `Blocked` task is dropped from the batch; the rest
   ship. Rules: dev-hub `CLAUDE.md` → Batches.
+- **Features** (dev-hub `FEATURE_BOARD.md`): larger work on one long-lived branch
+  `feature/<ID>-<slug>` (IDs like `EX-FA`). Its subtasks (`EX-FA1`, …) are committed straight
+  onto it, each commit prefixed with the subtask ID, after merging the default branch in; one
+  draft PR into `main` carries the whole feature. Rules: dev-hub `CLAUDE.md` → Features.
 - **Learnings:** mark lasting findings as `Learning:` lines in the log; `mark-done` promotes
   them into `## Learnings` above (via the master).
 - **Subagents:** delegate only broad/mechanical work to cheaper models, per dev-hub

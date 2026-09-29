@@ -1,11 +1,13 @@
 # examples/ — dev-hub, filled in
 
 Everything else in this template starts **empty**. This folder shows what a hub looks like
-after tracking one repo and finishing one task, so you can see the workflow before you run it.
+after tracking one repo, finishing one task, adding one feature and starting one research
+project, so you can see the workflow before you run it.
 
 **These files are reference only.** Commands never read or write `examples/`; your live state
-is the empty `TASK_BOARD.md`, `TASK_LOG.md`, `log/` and `repos/` at the top of the repo. Keep
-the folder as a guide, or delete it once you're comfortable.
+is the empty `TASK_BOARD.md`, `FEATURE_BOARD.md`, `TASK_LOG.md`, `log/`, `repos/` and
+`projects/` at the top of the repo. Keep the folder as a guide, or delete it once you're
+comfortable.
 
 | File | Shows | Real location in your hub |
 | --- | --- | --- |
@@ -13,9 +15,13 @@ the folder as a guide, or delete it once you're comfortable.
 | [`example-repo/CLAUDE.md`](example-repo/CLAUDE.md) | A repo **master**, with one `## Learnings` bullet | `repos/example-repo/CLAUDE.md` |
 | [`log/EX-1.md`](log/EX-1.md) | A finished task log | `log/EX-1.md` |
 | [`TASK_LOG.example.md`](TASK_LOG.example.md) | The task's row in the running index | `TASK_LOG.md` |
+| [`FEATURE_BOARD.example.md`](FEATURE_BOARD.example.md) | A feature (`EX-FA`) with its description and four subtasks, before it starts | `FEATURE_BOARD.md` |
+| [`projects/urban-heat-islands.md`](projects/urban-heat-islands.md) | A made-up research project (`HEAT`), a few weeks in | `projects/urban-heat-islands.md` |
+| [`projects/INDEX.example.md`](projects/INDEX.example.md) | That project's row in the portfolio | `projects/INDEX.md` |
 
 The sample repo, `example-repo`, is an imaginary small Python to-do CLI (`todo add/list/done/rm`,
-tested with `pytest`). Its task IDs use the prefix `EX-`.
+tested with `pytest`). Its task IDs use the prefix `EX-`, and its features `EX-FA`, `EX-FB`, …
+The project is made up too, and has no code repo yet.
 
 ---
 
@@ -40,21 +46,25 @@ rules are in [`../CLAUDE.md`](../CLAUDE.md) → Task protocol and
 ### 3. Find the work: `scan-repo example-repo`
 - Claude clones the repo, reads its README, tests, CI and `TODO`s, and on a `chore/` branch:
   - adds a **`## example-repo — EX-` section** to `TASK_BOARD.md` with candidate tasks, all
-    `Todo` (EX-1 … EX-3 in the example);
+    `⏩ Todo` (EX-1 … EX-3 in the example);
   - creates the **master** `repos/example-repo/CLAUDE.md`: what the repo is, how to install,
     build and test it, gotchas, an empty `## Learnings`, and the compact task protocol.
 - You review and merge the PR. You can also add tasks yourself any time with
   `new-task example-repo`.
 
 ### 4. Start a task: `plan-task EX-1`
-- Claude discusses the approach with you. When you agree, it:
+- Claude proposes a plan: the approach, the steps, the risks, and who does each step (the main
+  model, or a cheaper subagent for search or mechanical work). You discuss it, and Claude
+  **waits for your go**; answering its questions isn't a go. Then it:
   - creates **`log/EX-1.md`** from `log/TEMPLATE.md` with the **Plan**, **Checklist** and
     **Next step** filled in and `Status: WIP`;
   - adds an EX-1 row at the top of **`TASK_LOG.md`**;
-  - sets EX-1 to **`WIP`** on **`TASK_BOARD.md`**;
+  - sets EX-1 to **`🟠 WIP`** on **`TASK_BOARD.md`**;
   - commits all three **straight to dev-hub `main`** (`log: EX-1 plan`), before any code.
-- Small task and you're in a hurry? Saying "pick up EX-1" skips the discussion, but the plan
-  is still saved first.
+- Small, clear task? **`run-task EX-1`** (or just "EX-1") skips the discussion. Claude writes
+  the plan itself, saves it first all the same, and carries on to the draft PR. It stops to
+  ask only when [`../CLAUDE.md`](../CLAUDE.md) → When to stop and ask says so: for example, the
+  definition of done is ambiguous, or the work is bigger than the row's effort.
 
 ### 5. Do the work (target repo)
 - Claude branches **`task/EX-1-list-json`** off `example-repo`'s `main`.
@@ -68,9 +78,10 @@ rules are in [`../CLAUDE.md`](../CLAUDE.md) → Task protocol and
   **`Learning:`** line.
 
 ### 6. If it stops
-- A decision Claude can't make: Status **`Blocked`**, with the question under
+- A decision Claude can't make (`../CLAUDE.md` → When to stop and ask): it asks you if you're
+  there; otherwise Status **`‼️ Blocked`**, with the question under
   `## Blocked / open questions` in the log.
-- Out of usage: **`Usage-stopped`**. A run that's simply cut off stays `WIP`.
+- Out of usage: **`🛑 Usage-stopped`**. A run that's simply cut off stays `🟠 WIP`.
 - Either way: **`pickup-task EX-1`** reads the log and the branch and continues from Next step.
   (EX-1 in the example didn't stop.)
 
@@ -78,15 +89,16 @@ rules are in [`../CLAUDE.md`](../CLAUDE.md) → Task protocol and
 - **You** review and merge PR #12 in `example-repo`.
 - Then `mark-done EX-1` checks the PR is merged and, in one commit to dev-hub `main`
   (`log: EX-1 done`):
-  - sets EX-1 to **`Done`** on `TASK_BOARD.md`;
+  - sets EX-1 to **`🟢 Done`** on `TASK_BOARD.md`;
   - sets its `TASK_LOG.md` row to **`Done (merged 2026-09-19)`**;
   - finalizes **`log/EX-1.md`**: Status `Done`, PR marked merged, checklist ticked, Next step
     "None — task complete.";
   - promotes the log's `Learning:` line into the master's **`## Learnings`**. It reaches
     `example-repo` at the start of its next task.
 
-That's the state shown in this folder. EX-2 and EX-3 are still `Todo`: `plan-task EX-2`
-starts the next one, or `multi-task EX-2 EX-3` does both on one branch with one PR.
+That's the task state shown in this folder. EX-2 and EX-3 are still `⏩ Todo`:
+`run-task EX-2` starts the next one, or `multi-task EX-2 EX-3` does both on one branch with one
+PR.
 
 ## Variations
 - **Several small tasks at once:** `multi-task EX-2 EX-3` (or `multi-task example-repo` for a
@@ -96,5 +108,18 @@ starts the next one, or `multi-task EX-2 EX-3` does both on one branch with one 
   in the Project. At the end you get zips + `git am` patches to commit yourself, and
   `mark-done` records `Done (PR confirmed <date>)`. See `../README.md` → Claude Project
   (handback mode).
+- **Bigger work, a feature:** `new-feature example-repo` adds a block like
+  [`FEATURE_BOARD.example.md`](FEATURE_BOARD.example.md). `plan-task EX-FA` agrees the design,
+  waits for your go, then creates one `feature/EX-FA-<slug>` branch, one log and one draft PR.
+  Each `pickup-task EX-FA` works the next subtask, committed straight onto that branch with
+  its ID (`EX-FA1: …`). After you merge the PR, `mark-done EX-FA` closes it. See
+  [`../docs/FEATURES.md`](../docs/FEATURES.md).
+- **Research above the code, a project:** `new-project "Urban heat islands"` creates a file
+  like [`projects/urban-heat-islands.md`](projects/urban-heat-islands.md) and its
+  [index row](projects/INDEX.example.md). `plan-project HEAT WP1.2` plans a work package with
+  you. Code work it needs becomes tasks or features, and their IDs go in the work package's
+  **Links**. See [`../docs/PROJECTS.md`](../docs/PROJECTS.md).
+- **Checking it all agrees:** `check-board` (or `python3 scripts/check_board.py`) checks the
+  boards, logs and projects against each other. CI runs it on every PR and push to `main`.
 - **Overnight:** paste the kick-off prompt from [`../OVERNIGHT.md`](../OVERNIGHT.md) and name
   one S/M task (or one batch).

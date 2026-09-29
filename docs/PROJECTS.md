@@ -69,13 +69,13 @@ A work-package table looks like this:
 
 | WP | Status | Work package | Output | Links |
 | --- | --- | --- | --- | --- |
-| WP1.1 | 🟢 Done | Download and cloud-mask the LST scenes | clean dataset | HEAT-3 |
-| WP1.2 | 🟠 WIP | Build the intensity pipeline | maps + uncertainty | HEAT-FA |
+| WP1.1 | 🟢 Done | Download and cloud-mask the LST scenes | clean dataset | HT-3 |
+| WP1.2 | 🟠 WIP | Build the intensity pipeline | maps + uncertainty | HT-FA |
 | WP1.3 | ⏩ Todo | Validate against weather stations | validation figure | — |
 ```
 
-(`HEAT-3` and `HEAT-FA` stand for a task and a feature on the boards of a repo with the `HEAT-`
-prefix.)
+(`HT-3` and `HT-FA` stand for a task and a feature on the boards of `heat_tools`, whose prefix
+is `HT-`. A project ID can't be a repo prefix, so `HEAT` and `HT-` differ.)
 
 **IDs** never change and are never reused: goals `G1`, objectives `O1`, work packages
 `WP1.1` (objective 1, package 1). To point at another project's work, write `HEAT WP1.2`.

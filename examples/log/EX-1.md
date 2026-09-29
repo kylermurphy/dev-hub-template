@@ -20,6 +20,8 @@ Add a `--json` flag to the `list` sub-command in `cli.py`. When set, serialize t
 `store.load()` returns with `json.dumps` (sorted by id) instead of the table output. Add a
 test in `tests/test_cli.py` using the `tmp_todo_home` fixture, and describe the flag in its
 `help=` string. Risk: the table formatter mutates items; serialize before formatting.
+Who does each step: the main model throughout; the task is too small to hand to a subagent.
+Agreed with the owner in `plan-task EX-1`, then saved here before any code.
 
 ## Checklist
 - [x] Branch `task/EX-1-list-json` off `main`; first commit syncs `CLAUDE.md` from the master
