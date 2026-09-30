@@ -12,36 +12,43 @@ Point Claude at any row by its ID, from claude.ai/code, Claude Code, a Claude Pr
 
 Every task has an ID (e.g. `EX-1`, `EX-2`). To start one, name it.
 
-- **Start a task:** "plan-task EX-2" (saves a plan, then implements) or just "Pick up EX-2."
-  Claude clones the repo, does the work on a `task/<ID>` branch, and hands back a draft PR or
-  diff. Nothing is pushed to the target repo's `main`. Resume a stopped task with
+- **Start a task:** "plan-task EX-2" (agrees a plan with you, waits for your go, then
+  implements) or "run-task EX-2" (Claude plans it itself and goes; just naming the ID does
+  the same). Claude clones the repo, does the work on a `task/<ID>` branch, and hands back a
+  draft PR or diff. Nothing is pushed to the target repo's `main`. Resume a stopped task with
   `pickup-task <ID>`.
+- **Bigger work:** a change that needs several steps on its own branch for weeks is a
+  **feature**, on [`FEATURE_BOARD.md`](FEATURE_BOARD.md) (`new-feature <repo>`). See
+  `docs/FEATURES.md` for when to use one.
 - **Batch simple tasks:** "multi-task EX-3 EX-4 EX-5" (or "multi-task example-repo"
   for a proposed batch) does up to 5 same-repo, non-L tasks in one branch and one PR. Each
   row still moves on its own.
 - **Add a task:** edit the repo's table yourself — columns are `| ID | Status | Task | Type |
-  Effort | Definition of done |`, next ID in that repo's series — or run `new-task <repo>`, or
-  just describe it and Claude slots it in.
+  Effort | Definition of done |`, next ID in that repo's series, Status `⏩ Todo` — or run
+  `new-task <repo>`, or just describe it and Claude slots it in.
 - **Track a repo:** run `add-repo <repo>` (or add a row to *Tracked Repos* by hand), then
   `refresh-overview` to fill its Overview row and `scan-repo <name>` to build its task table.
   Command spec in `COMMANDS.md`.
-- **Mark progress:** each row has a **Status** that moves as the task advances (`WIP` when
-  started, `Blocked` / `Usage-stopped` if it stops). When a task's PR merges, run
-  `mark-done <ID>`, the only way to set `Done`. A finished task shows `Done` here, with its
+- **Mark progress:** each row has a **Status** that moves as the task advances (`🟠 WIP` when
+  started, `‼️ Blocked` / `🛑 Usage-stopped` if it stops). When a task's PR merges, run
+  `mark-done <ID>`, the only way to set `Done`. A finished task shows `🟢 Done` here, with its
   dated record and PR link in `TASK_LOG.md` and a write-up in `log/<ID>.md`. Commands are in
   `COMMANDS.md`; `check-board` checks the board's consistency.
 
 Effort key: **S** ≈ under an hour · **M** ≈ a focused session · **L** ≈ multi-session or
 needs a design decision first.
 
-Status key: `Todo` not started · `WIP` in progress (branch/PR open) · `Blocked` waiting on a
-decision · `Usage-stopped` paused by usage limits · `Done` merged.
+Status key: ⏩ `Todo` not started · 🟠 `WIP` in progress (branch/PR open) ·
+‼️ `Blocked` waiting on a decision · 🛑 `Usage-stopped` paused by usage limits ·
+🟢 `Done` merged. Each Status cell shows the icon and the word; `CLAUDE.md` holds the exact
+strings.
 
 ## Tracked Repos
 
 Repos available to work on — **your input list**. Add a row to start tracking a repo, then run
 `refresh-overview` to fill its Overview row and `scan-repo <name>` to build its task table.
-Set **Tracking** to `paused` to shelve a repo without deleting it. See `COMMANDS.md`.
+Set **Tracking** to `paused` to shelve a repo without deleting it. Each **Repo** name links to
+its task table below (`scan-repo` adds the link when it builds the table). See `COMMANDS.md`.
 
 | Repo | URL | Visibility | Prefix | Tracking | Notes |
 | --- | --- | --- | --- | --- | --- |

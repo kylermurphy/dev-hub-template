@@ -7,14 +7,17 @@ the repo masters) summarizes it and points here.
 
 ## What this repo is
 The private control/planning hub for the owner's development work. It holds the backlog
-(`TASK_BOARD.md`), the task records (`TASK_LOG.md`, `log/`), the commands (`COMMANDS.md`) and
-their helper (`scripts/`), the overnight guide (`OVERNIGHT.md`), the workflow decisions
-(`DECISIONS.md`), master copies of each target repo's instruction file
+(`TASK_BOARD.md` for tasks, `FEATURE_BOARD.md` for larger features), the task records
+(`TASK_LOG.md`, `log/`), the commands (`COMMANDS.md`) and their helpers (`scripts/`, with
+`check-board` run in CI on every PR), the overnight guide (`OVERNIGHT.md`), the workflow
+decisions (`DECISIONS.md`), master copies of each target repo's instruction file
 (`repos/<name>/CLAUDE.md`), and the PR template every task PR follows (`templates/`).
-`README.md` is the human guide: surfaces and access, setup and examples. `examples/` holds a
-filled-in sample for reference only (never edit it as live state); `AGENTS.md` points other
-agents here; `ADAPTING.md` covers porting to other agents. It contains **no application
-code**; it's planning and instructions only.
+`projects/` holds the research layer above the boards: one file per multi-month research
+project, plus a portfolio index. `README.md` is the human overview (surfaces and access,
+setup); `docs/` holds the guides (`docs/TASKS.md`, `docs/FEATURES.md`, `docs/PROJECTS.md`).
+`examples/` holds a filled-in sample for reference only (never edit it as live state);
+`AGENTS.md` points other agents here; `ADAPTING.md` covers porting to other agents. It
+contains **no application code**; it's planning and instructions only.
 
 ## Target repos
 
@@ -23,6 +26,9 @@ The canonical list of target repos and their task-ID prefixes is `TASK_BOARD.md`
 duplicate list is kept here, so nothing can drift from the board. dev-hub can track itself too
 (add it to Tracked Repos, e.g. with prefix `HUB-`); its instructions are this file, so it has
 no `repos/dev-hub/` master.
+Each repo's name in Tracked Repos links to its task section on the board (`scan-repo` adds the
+link when it creates the section). A repo's features, if it has any, are in its section of
+`FEATURE_BOARD.md`.
 
 ## Task protocol (mandatory)
 
@@ -40,10 +46,23 @@ context) and always:
    repo's copy. (The PR template is **not** copied; see step 4.) The instruction-file name
    `CLAUDE.md` is **(Claude-specific)**; other agents read other names (see `ADAPTING.md` →
    Instruction-file name).
-3. **Persist the plan.** For any non-trivial or unattended task, write the plan to
-   `log/<ID>.md` (`## Plan`, `## Checklist`, `## Next step`) and commit it to dev-hub
-   **before heavy work**. That's what `plan-task <ID>` does. An interactive `plan <ID>` dry
-   run stays ephemeral, since the owner is present.
+3. **Persist the plan.** Every task gets a written plan in `log/<ID>.md`, committed to dev-hub
+   **before heavy work**. It has three parts:
+   - `## Plan`: the approach, the sub-steps, the risks, and **who does each sub-step** (the
+     main model, or a subagent: see Subagents);
+   - `## Checklist`;
+   - `## Next step`.
+
+   There are two ways to get it:
+   - **`plan-task <ID>` plans with the owner.** Post the plan in chat, discuss it, and **wait
+     for their explicit go** before saving or starting anything. Answers to open questions,
+     earlier discussion, or "plan and do" aren't a go.
+   - **`run-task <ID>` plans on its own.** Write the plan, save it and carry on, stopping only
+     under **When to stop and ask** (below). It's for S/M tasks with a clear definition of
+     done. L tasks, rows that need a decision, and features go through `plan-task`. Naming a
+     task ID on its own ("do EX-3") means `run-task`.
+
+   An interactive `plan <ID>` dry run stays ephemeral, since the owner is present.
 4. **PR.** Open a draft PR for that branch (a patch/diff only when the session can't push;
    see `README.md` → Surfaces and access). The description follows dev-hub's
    `templates/PULL_REQUEST_TEMPLATE.md` (read it from dev-hub; it isn't copied into target
@@ -62,8 +81,8 @@ context) and always:
    `mark-done` promotes those into the master's `## Learnings` (see Memory, below).
 7. **Stop states; resume, don't restart.** Commit/push incrementally and keep `log/<ID>.md`'s
    `Status`/`Next step` current.
-   - Hit an ambiguous or irreversible decision → Status **`Blocked`**, and fill
-     `## Blocked / open questions` with what's needed.
+   - Hit a **When to stop and ask** rule (below) → ask the owner if they're present; otherwise
+     Status **`Blocked`**, and fill `## Blocked / open questions` with what's needed.
    - Stopping for budget → Status **`Usage-stopped`** if you're able to.
    - Either way keep `Next step` current so **`pickup-task <ID>`** can resume. A run cut off
      abruptly may not set a status. That's fine: a `WIP` task with a `task/<ID>` branch is
@@ -71,6 +90,25 @@ context) and always:
    - If a `task/<ID>` branch or log already exists, continue from `Next step`
      (`pickup-task`) rather than restarting.
 8. **Definition of done** = the task's row on `TASK_BOARD.md`.
+
+### When to stop and ask
+
+Whatever runs without waiting for the owner (`run-task`, `multi-task`, `pickup-task`, an overnight
+run) stops for them when:
+1. the definition of done is ambiguous, or can't be tested as written;
+2. a design choice with more than one reasonable answer would change something visible, such
+   as an API, the file layout, names users see, or a data format, and nothing settles it:
+   not the row, the repo's master, `DECISIONS.md`, or the repo's existing conventions;
+3. a step is irreversible or reaches outside the task's branch and PR: deleting data,
+   force-pushing, publishing, touching another repo, changing secrets or CI permissions;
+4. the work turns out bigger than the row's effort, or needs changes the row doesn't cover;
+5. checks fail for reasons outside the task, or the same fix fails twice.
+
+**Owner present:** ask in chat (the question, the options, your recommendation) and wait.
+**Away** (an overnight run, or no answer this session): set the task `Blocked` with the
+question under `## Blocked / open questions` and stop it. A batch drops it and finishes the
+rest. Anything the rules don't catch, decide it and record the choice in the log and the PR,
+so the owner can review it afterwards.
 
 ### dev-hub's own tasks (`HUB-`)
 
@@ -152,12 +190,89 @@ branch with one PR. Everything above still applies **per task**, with these diff
 - **Closing:** after merge, `mark-done` closes the whole batch in one pass: one merge check,
   one bookkeeping commit, learnings promoted per task. Dropped tasks are skipped.
 
+### Features (long-lived feature branches)
+
+A **feature** is larger work in one repo that stays on its own branch until it's finished as a
+whole: several related steps that shouldn't reach `main` one at a time. Features live on
+`FEATURE_BOARD.md`, one `## <name> — <PREFIX>-` section per repo that has any. Use one for
+three or more related steps that belong together; otherwise use tasks or a batch
+(`docs/FEATURES.md` → Task or feature?). Everything above applies to a feature as it does to a
+task, with these differences:
+
+- **IDs.** A feature is `<PREFIX>F<letter>` (`EX-FA`, `EX-FB`, …, the next free letter in that
+  repo); its subtasks are `<feature ID><n>` (`EX-FA1`, `EX-FA2`), numbered inside the feature.
+  IDs are never reused, and neither form can be mistaken for a task ID (`EX-7`).
+- **The block.** A `### <ID> — <title>` heading, then a
+  `**Status** … · **Branch** … · **PR** … · **Log** …` line (`—` until they exist), a
+  **Description.** paragraph (2–4 sentences: what the feature builds and why; read it before the
+  table), a **Done when.** line (the feature's definition of done), and the subtask table
+  `| ID | Status | Subtask | Type | Effort | Definition of done |`. Keep subtasks S or M; an L
+  one is split when the feature is planned.
+- **Starting** (`plan-task <feature ID>`): branch `feature/<ID>-<slug>` off the default branch,
+  with the instructions sync as its first commit; the plan (design, subtask order) in
+  `log/<ID>.md`; one `TASK_LOG.md` row; the feature's Status → `WIP`. Open a **draft PR into
+  the default branch** early: it's the feature's single review, and CI runs on every push.
+- **Subtasks have no PR, log or `TASK_LOG.md` row of their own.** To work one
+  (`pickup-task <subtask ID>`, or the feature ID for the next one):
+  - first merge the default branch into the feature branch, so it doesn't drift;
+  - commit straight onto the feature branch, each commit prefixed with the subtask ID
+    (`EX-FA2: …`), so a subtask can be reviewed or reverted on its own;
+  - run the repo's checks. Set the subtask `WIP` when you start it and `Done` once its commits
+    are pushed and the checks pass. This is the one `Done` that `mark-done` doesn't set.
+  - The feature's log keeps a checklist item per subtask, and its Next step names the next one.
+- **Stop states** apply to the feature (log + board). A subtask that needs a decision is
+  `Blocked` in the table, with its question in the feature log; other subtasks can carry on.
+- **Closing** (`mark-done <feature ID>`): after the feature PR merges, and only if every
+  subtask is `Done`. To drop a subtask, remove its row and say why in the feature log (its ID
+  isn't reused). `mark-done` then closes the feature like a task.
+- `multi-task` doesn't take features or subtasks. A `HUB-` feature follows the `HUB-` rules:
+  its bookkeeping rides on the feature PR.
+
 Statuses: `Todo` not started · `WIP` in progress (branch/PR open) · `Blocked` waiting on a
 decision · `Usage-stopped` paused by usage limits · `Done` merged.
+**On `TASK_BOARD.md` and `FEATURE_BOARD.md`** each Status is written as its icon + word,
+exactly: `⏩ Todo` · `🟠 WIP` · `‼️ Blocked` · `🛑 Usage-stopped` · `🟢 Done`. Copy them from
+here (`‼️` is two code points). The word is the Status, so "set `WIP`" anywhere means writing
+`🟠 WIP` on the board. `TASK_LOG.md` and `log/<ID>.md` use the word alone.
 
 For unattended/overnight runs (model choice, guardrails, kick-off/resume prompts) see
 `OVERNIGHT.md`. Default lean: the cheapest model that reliably does the task; **S/M** tasks
 only when unattended.
+
+## Projects (research layer)
+
+`projects/` is the strategic layer above the boards. It has one Markdown file per multi-month
+research project, holding its goals, objectives, plans, todos and research log. It's mostly
+for the owner, and structured so agents can read it and plan from it. Guide: `docs/PROJECTS.md`.
+Commands: `new-project`, `plan-project`, `review-projects` (`COMMANDS.md`).
+
+- **Files.** Each project is `projects/<descriptive-name>.md` (lowercase with hyphens, e.g.
+  `urban-heat-islands.md`), made from `projects/TEMPLATE.md`. `projects/INDEX.md` is the
+  portfolio, with one row per project.
+- **IDs.**
+  - Each project has a short uppercase ID in its metadata (`id: HEAT`): 2–8 capital letters or
+    digits, unique, and never a tracked repo's prefix without its hyphen.
+  - Inside a project: goals `G1`, objectives `O1`, work packages `WP1.1` (objective 1,
+    package 1).
+  - IDs never change and are never reused. Refer to another project's work as `HEAT WP1.2`.
+- **The structure is fixed.** The metadata block and the `##` sections stay in the template's
+  order, with one `### O<n> — …` subheading and one work-package table per objective.
+  `check-board` checks this. Work-package statuses are `⏩ Todo` · `🟠 WIP` · `‼️ Blocked` ·
+  `🟢 Done`.
+- **Edits go straight to `main`** (in a branch-restricted session: the designated branch and
+  its PR), or the owner edits by hand.
+  - Update `updated:` on every change, and the project's `INDEX.md` row when its status,
+    horizon or updated date changes.
+  - Projects aren't tasks: they have no log, `TASK_LOG.md` row or board Status. The file is
+    its own record.
+- **Agents propose; the owner decides goals and objectives.** Never add, remove or reword them
+  without asking them. Plans come from `plan-project`, which discusses the plan and waits for
+  their go, like `plan-task`. The agreed plan goes under `## Plans`, newest first.
+- **Code work** that a plan needs becomes tasks or features (`new-task`, `new-feature`), and
+  their board IDs go in the work package's **Links** column. Links point one way only: board
+  rows don't point back.
+- **Private.** Project files are never copied to the public template; only `TEMPLATE.md` and a
+  made-up example are.
 
 ## Subagents (delegating to cheaper models)
 
@@ -168,10 +283,13 @@ pushes, PRs and bookkeeping**. Delegate only when it's cheaper than doing it you
 | Delegate | Model |
 | --- | --- |
 | Broad read-only search: find usages, locate config, survey a codebase | Haiku |
-| Mechanical fan-out: `repo_stats.sh` over Tracked Repos (`refresh-overview`), `check-board` reads, one identical edit across all `repos/*/CLAUDE.md` | Haiku (Sonnet if the edit needs care) |
+| Mechanical fan-out: `repo_stats.sh` over Tracked Repos (`refresh-overview`), one identical edit across all `repos/*/CLAUDE.md` | Haiku (Sonnet if the edit needs care) |
 | Run tests / lint / a build and summarize the failures | Haiku |
 | Draft tests or docs from a clear, written spec | Sonnet |
 
+- **Every plan names its subagents.** Each sub-step of a `plan-task` or `run-task` plan says
+  who does it: the main model, or a Haiku or Sonnet subagent. Delegation is decided up front
+  and visible in the log.
 - **Don't delegate** the plan, design decisions, anything that could be `Blocked`, **L** tasks,
   or small jobs. A subagent starts cold, so the handoff costs more than a quick edit.
 - **Model by effort**, the same tiers as `OVERNIGHT.md` and `README.md`: **S** → Haiku for
@@ -198,13 +316,18 @@ pushes, PRs and bookkeeping**. Delegate only when it's cheaper than doing it you
   repo** (clone it), not in this hub, but write the log entry back here.
 - A repo's instructions are edited in its **dev-hub master** (`repos/<name>/CLAUDE.md`); the
   protocol's sync step propagates them into the repo. Don't hand-edit a repo's root copy.
-- Keep `TASK_BOARD.md` and `TASK_LOG.md` current as tasks land.
+- Keep `TASK_BOARD.md` and `TASK_LOG.md` current as tasks land. `python3 scripts/check_board.py`
+  checks they agree with `log/`; CI runs it on every PR and push to `main`. A `check-board`
+  rule lives in `COMMANDS.md` and in the script: change both together.
 - **Commands** are defined in `COMMANDS.md`; run them when named.
   - **Board maintenance** (`add-repo <repo>`, `refresh-overview`, `scan-repo <name>`,
-    `new-task <repo>`, `check-board`) is driven by the **Tracked Repos** table. It's
-    lightweight: branch + PR on dev-hub, no log or board Status.
-  - **Task lifecycle** (`plan-task <ID>…`, `multi-task <ID>…`, `pickup-task <ID>`,
-    `mark-done <ID>…`) follows the task protocol above (batches: see Batches). Its
+    `new-task <repo>`, `new-feature <repo>`, `check-board`) is driven by the **Tracked Repos**
+    table. It's lightweight: branch + PR on dev-hub, no log or board Status.
+  - **Projects** (`new-project`, `plan-project <ID>`, `review-projects`) work on `projects/`;
+    see Projects above.
+  - **Task lifecycle** (`plan-task <ID>…`, `run-task <ID>`, `multi-task <ID>…`,
+    `pickup-task <ID>`, `mark-done <ID>…`) follows the task protocol above (batches: see
+    Batches; features: see Features, where they also take feature and subtask IDs). Its
     bookkeeping goes straight to dev-hub `main`, or to the designated branch + a PR in a
     branch-restricted session (`HUB-` tasks: on the task PR).
 - **Where it runs:** private repos, including dev-hub, are reachable from **claude.ai/code
@@ -219,9 +342,12 @@ pushes, PRs and bookkeeping**. Delegate only when it's cheaper than doing it you
   git (see `README.md` → Surfaces and access).
 - **Plan first when present:** if asked to "plan &lt;command or ID&gt;", do the read-only part and
   propose the changes in chat with no commits; execute only on "go"/"run". That preview is
-  ephemeral. `plan-task <ID>` is different: it saves the plan to `log/<ID>.md`. Unattended
-  runs go straight to a draft (with the plan persisted first).
-- **Changing the workflow:** edit this file first, then the summaries (`README.md`,
-  `COMMANDS.md`, the masters' compact protocol), and add a line to `DECISIONS.md` (its Where
+  ephemeral. `plan-task <ID>` also discusses first and always waits for the owner's go, but it
+  saves the agreed plan to `log/<ID>.md` and starts the task. `run-task <ID>` is the path
+  that doesn't wait: it writes its own plan, saves it, and goes to a draft PR (protocol step
+  3).
+- **Changing the workflow:** edit this file first, then the summaries (`README.md`, the
+  guides in `docs/`, `COMMANDS.md`, the masters' compact protocol), and add a line to
+  `DECISIONS.md` (its Where
   column is the PR's number and link; see the rules at its top).
 - This repo is **private**. Do not add secrets or credentials regardless.

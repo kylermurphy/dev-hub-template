@@ -7,7 +7,8 @@ so GitHub won't pre-fill it for PRs opened by hand there.
 ## Task
 <!-- dev-hub task ID, e.g. EX-1. A multi-task batch lists every ID (EX-3, EX-4, EX-5)
 and gives each task its own subsection under What changed and Definition of done; note any
-task dropped from the batch (Blocked) and why. -->
+task dropped from the batch (Blocked) and why. A feature PR names the feature ID and gives each
+subtask (EX-FA1, EX-FA2, …) its own subsection the same way. -->
 
 ## What changed
 <!-- summary of the changes and why -->

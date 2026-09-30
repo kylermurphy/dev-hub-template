@@ -57,12 +57,13 @@ Map "fast / mid / most-capable" to your provider's line-up; the effort → tier 
 
 ## What stays the same
 
-The board (`TASK_BOARD.md`), Tracked Repos, the task protocol (branch → sync instructions →
-persist the plan → PR → log), the statuses, batches (`multi-task`), the commands, the
-resumability/plan-persistence contract, `DECISIONS.md`, and the logging are all agent-neutral.
-They're conventions, not code.
+The boards (`TASK_BOARD.md`, `FEATURE_BOARD.md`), Tracked Repos, the task protocol (branch →
+sync instructions → persist the plan → PR → log), the statuses, batches (`multi-task`),
+features, projects (`projects/`), the commands, the resumability/plan-persistence contract,
+`DECISIONS.md`, and the logging are all agent-neutral. They're conventions, not code; the one
+script that checks them, `scripts/check_board.py`, is plain Python with no dependencies.
 
 **GitHub is assumed throughout**, though: PRs, the PR template, `git am` patches, GitHub
-Desktop in the handback steps, and GitHub Actions for CI. Moving to another forge (GitLab,
-Gitea, …) is a larger change than switching agents: rename "PR" to your merge-request
-equivalent and revisit every GitHub-specific step.
+Desktop in the handback steps, and GitHub Actions for CI (`.github/workflows/check-board.yml`).
+Moving to another forge (GitLab, Gitea, …) is a larger change than switching agents: rename
+"PR" to your merge-request equivalent and revisit every GitHub-specific step.

@@ -9,54 +9,74 @@
 
 ## Mission Control
 
-**dev-hub is mission control for every task across repos you track.** You decide which repos
-get tracked (`add-repo`) and you can add tasks yourself (`new-task`), or Claude finds them
-(`scan-repo` reads a repo and proposes what needs doing) and adds them to a repo-specific
-table hosted on the `dev-hub` task board. 
+**dev-hub is mission control for development work across the repos you track.** You decide
+which repos get tracked (`add-repo`). You add work yourself (`new-task`, `new-feature`), or
+Claude finds it: `scan-repo` reads a repo and proposes tasks. Name a task or feature from
+anywhere, and Claude works it on a branch and hands back a PR for you to review. `dev-hub` is
+the source of truth for the backlog, the working conventions, and each repo's instruction file.
+Claude works from here in the cloud (claude.ai/code) and on the machine (Claude Code), and all
+of it lands on GitHub as branches and PRs you review. Above the boards, `projects/` keeps your
+multi-month research projects, so the science and the code work stay connected.
 
-Name a task from anywhere, and Claude works it on a branch and hands back a PR for you to 
-review. `dev-hub` is the source of truth for the task backlog, the working conventions, 
-and each repo's instruction file. Claude works from here in the cloud (claude.ai/code) 
-and on the machine (Claude Code), and all of it lands on GitHub as branches and PRs you review.
-
-It holds no code, just three things:
-- **The task board**: every task across every tracked repo, each with an ID and a definition
-  of done.
+It holds no code, just these:
+- **The boards:** the task board lists every task across every tracked repo, each with an ID
+  and a definition of done. The feature board holds larger work on long-lived branches.
+- **The projects:** one file per research project, holding goals, objectives and work
+  packages, plans, todos and a research log. Work packages link to the tasks and features that
+  do the code work.
 - **The playbook**: one set of rules every Claude session follows, wherever it runs.
-- **The record**: a log of what each task did, so any session can pick up where the last one
-  stopped.
+- **The record**: a log of what each task and feature did, so any session can pick up where
+  the last one stopped.
+
+**Three levels of work**
+
+| | Project | Feature | Task |
+| --- | --- | --- | --- |
+| What | A multi-month research initiative: goals, objectives, work packages | Several related code steps that belong together, e.g. a new module | One self-contained change: a fix, a test suite, a docs pass |
+| Where it lives | `projects/<name>.md`, edited on `main` | `feature/<ID>-<slug>` for days or weeks; subtasks are committed onto it, with one PR at the end | `task/<ID>-<slug>`, one PR, merged when done |
+| Tracked on | [`projects/INDEX.md`](projects/INDEX.md) | [`FEATURE_BOARD.md`](FEATURE_BOARD.md) | [`TASK_BOARD.md`](TASK_BOARD.md) |
+| Guide | [`docs/PROJECTS.md`](docs/PROJECTS.md) | [`docs/FEATURES.md`](docs/FEATURES.md) (includes "Task or feature?") | [`docs/TASKS.md`](docs/TASKS.md) |
 
 **Plan → Launch → Track → Land**
-- **Plan**: `plan-task` agrees the approach for a task and saves it.
-- **Launch**: name the task ID to get started (or batch a few together with `multi-task`).
+- **Plan**: `plan-task` agrees the approach with you, waits for your go, then saves it.
+  `run-task` has Claude plan a simple task itself and go straight to a PR.
+- **Launch**: name the task ID to get started, or batch a few together with `multi-task`. A
+  feature's subtasks are worked one by one with `pickup-task`.
 - **Track**: every step is logged; a simple memory bank lets a stopped task resume with
   `pickup-task`.
 - **Land**: you merge the PR, which details all the work done, and `mark-done` closes it out
-  on the task board.
+  on the board.
 
 **Commands** ([`COMMANDS.md`](COMMANDS.md)). *Board maintenance:* `add-repo` ·
-`refresh-overview` · `scan-repo` · `new-task` · `check-board`. *Task lifecycle:* `plan-task` ·
-`multi-task` · `pickup-task` · `mark-done`. Prefix any of them with `plan` for a dry run.
+`refresh-overview` · `scan-repo` · `new-task` · `new-feature` · `check-board`. *Task
+lifecycle:* `plan-task` · `run-task` · `multi-task` · `pickup-task` · `mark-done` (these take
+task IDs, and feature or subtask IDs as well). *Projects:* `new-project` · `plan-project` ·
+`review-projects`. Prefix any of them with `plan` for a dry run.
 
-**Statuses:** `Todo` not started · `WIP` in progress (branch/PR open) · `Blocked` waiting on a
-decision · `Usage-stopped` paused by usage limits · `Done` merged.
+**Statuses:** ⏩ `Todo` not started · 🟠 `WIP` in progress (branch/PR open) · ‼️ `Blocked`
+waiting on a decision · 🛑 `Usage-stopped` paused by usage limits · 🟢 `Done` merged. The boards
+show the icon with the word; `TASK_LOG.md` and the logs use the word alone.
 
 ## Contents
 
 | Path | What it is |
 | --- | --- |
-| [`README.md`](README.md) | This guide: surfaces, access, setup, how work runs, memory, examples. |
+| [`README.md`](README.md) | This overview: what dev-hub is, surfaces and access, setup, memory. |
+| [`docs/`](docs/) | The guides: [`TASKS.md`](docs/TASKS.md) (how tasks and batches run, with examples), [`FEATURES.md`](docs/FEATURES.md) (long-lived features, and when to use one) and [`PROJECTS.md`](docs/PROJECTS.md) (research projects). |
+| [`projects/`](projects/) | Research projects: one file per project from [`TEMPLATE.md`](projects/TEMPLATE.md), and the portfolio in [`INDEX.md`](projects/INDEX.md). |
 | [`CLAUDE.md`](CLAUDE.md) | Instructions for Claude in this hub, including the **full task protocol** (the only full copy), subagent guidance and memory rules. |
 | [`TASK_BOARD.md`](TASK_BOARD.md) | The backlog: **Tracked Repos** (the list of repos), the Repo Overview, and one task table per repo. |
+| [`FEATURE_BOARD.md`](FEATURE_BOARD.md) | Larger work on long-lived feature branches: one section per repo, each feature with a description and a subtask table. |
 | [`COMMANDS.md`](COMMANDS.md) | Spec for every command, plus the `plan` dry-run prefix. |
 | [`OVERNIGHT.md`](OVERNIGHT.md) | Running tasks while away: usage limits, guardrails, kick-off/resume prompts. |
 | [`DECISIONS.md`](DECISIONS.md) | Why the workflow is the way it is: dated decisions. |
-| [`TASK_LOG.md`](TASK_LOG.md) | Running index of tasks, in flight and done (newest first). |
-| [`log/`](log/) | One write-up per task (`<ID>.md`) from `log/TEMPLATE.md`: Status, Plan, Checklist, Next step, Blocked / open questions, notes. |
+| [`TASK_LOG.md`](TASK_LOG.md) | Running index of tasks and features, in flight and done (newest first). |
+| [`log/`](log/) | One write-up per task or feature (`<ID>.md`) from `log/TEMPLATE.md`: Status, Plan, Checklist, Next step, Blocked / open questions, notes. |
 | [`repos/<name>/CLAUDE.md`](repos/) | **Master** instruction file for each target repo, including its `## Learnings`. Empty until `scan-repo` creates the first one. |
 | [`templates/`](templates/) | The PR template every task PR follows (it stays here; Claude reads it from dev-hub, so it isn't copied into target repos), and `PROJECT_INSTRUCTIONS.md`, the custom instructions for a Claude Project in handback mode (see §2). |
-| [`scripts/`](scripts/) | Helper scripts (`repo_stats.sh`, used by `refresh-overview` and `scan-repo`). |
-| [`examples/`](examples/) | A filled-in sample (`example-repo`, tasks `EX-1`…`EX-3`) and a step-by-step walkthrough. Read-only reference: your working files are the empty ones above. |
+| [`scripts/`](scripts/) | Helper scripts: `repo_stats.sh` (used by `refresh-overview` and `scan-repo`) and `check_board.py` (runs every `check-board` check). |
+| [`.github/workflows/`](.github/workflows/) | CI: `check-board.yml` runs `scripts/check_board.py` on every PR and push to `main`. |
+| [`examples/`](examples/) | A filled-in sample (`example-repo` with tasks `EX-1`…`EX-3` and feature `EX-FA`, plus a sample research project) and a step-by-step walkthrough. Read-only reference: your working files are the empty ones above. |
 | [`AGENTS.md`](AGENTS.md) | One-line pointer to `CLAUDE.md`, for agents that look for `AGENTS.md`. |
 | [`ADAPTING.md`](ADAPTING.md) | How to adapt dev-hub to another agent or ecosystem (untested). |
 | [`CHANGELOG.md`](CHANGELOG.md), [`VERSION`](VERSION) | Template version history; current version. |
@@ -75,6 +95,7 @@ decision · `Usage-stopped` paused by usage limits · `Done` merged.
   phone if needed) and can pull into Claude Code later.
 - **Every task is self-contained**: branch, plan saved to its log, PR, log entry. It can be
   picked up by any later session from its board row and log alone, without the original chat.
+  A feature works the same way, from its block on the feature board and its log.
 
 ```mermaid
 flowchart LR
@@ -243,58 +264,26 @@ Then give sessions access:
 
 ## 4. How work runs
 
-**The board.** `TASK_BOARD.md` has one section per repo, and each row is a task: ID
-(`EX-1`), type, effort (**S** ≈ <1h · **M** ≈ a session · **L** ≈ multi-session or needs a
-design call) and a **definition of done**, which is the acceptance test. Add work with
-`new-task <repo>` or by editing the table.
+Each way of working has its own guide:
+- **[`docs/TASKS.md`](docs/TASKS.md):**
+  - the task board;
+  - a task end to end, and batches of simple tasks;
+  - defaults: handback, autonomy, model choice, overnight runs;
+  - the commands, and examples from each surface.
+- **[`docs/FEATURES.md`](docs/FEATURES.md):**
+  - task or feature?;
+  - the feature board;
+  - a feature end to end, stops and changes of plan;
+  - examples.
+- **[`docs/PROJECTS.md`](docs/PROJECTS.md):**
+  - the three levels of work;
+  - a project file, section by section;
+  - starting, planning, day-to-day updates and reviews;
+  - making projects easy to plan from.
+- **[`OVERNIGHT.md`](OVERNIGHT.md):** running tasks while you're away.
 
-**A task, end to end** (full rules: [`CLAUDE.md`](CLAUDE.md) → Task protocol):
-
-1. `plan-task <ID>`: agree a plan in chat, and Claude saves it to `log/<ID>.md` and sets `WIP`.
-   Or just name the ID for small tasks.
-2. Claude branches `task/<ID>-<slug>` in the target repo. The first commit syncs its
-   `CLAUDE.md` from dev-hub. Then it does the work and opens a **draft PR** whose description
-   follows dev-hub's PR template.
-3. The bookkeeping (`log/<ID>.md`, a `TASK_LOG.md` row, the board Status) is committed
-   straight to dev-hub `main`, or via a dev-hub PR in a branch-restricted session.
-4. If it stops, it's `Blocked` (a question for you in the log) or `Usage-stopped`.
-   `pickup-task <ID>` resumes from the log's **Next step**. A run cut off mid-way stays `WIP`
-   and is still resumable.
-5. You review and merge the PR, then run `mark-done <ID>`. It checks the merge, sets `Done`
-   everywhere, and promotes any `Learning:` notes into the repo's master.
-
-**Several simple tasks at once** (rules: [`CLAUDE.md`](CLAUDE.md) → Batches):
-`multi-task EX-3 EX-4 EX-5`, or `multi-task example-repo` to have Claude propose a
-batch of that repo's `Todo` **S** tasks. The batch must be in one repo, with no **L** tasks
-and at most 5 tasks. It gets one branch (`task/EX-3+EX-4+EX-5-…`) and **one PR**.
-- Each task keeps its own log, `TASK_LOG.md` row and Status. Commits are prefixed with their
-  task ID, and the PR has a section per task.
-- A task that needs your decision is dropped from the batch as `Blocked`; the rest still
-  ship.
-- For a batch that needs a real plan first, use `plan-task EX-3 EX-4 …`. Close it after
-  merge with `mark-done EX-3 EX-4 EX-5`.
-
-**Defaults**
-- **Handback:** a draft PR; a patch/diff only when the session can't push.
-- **Autonomy:** when you're away, Claude goes to a draft. It stops only for irreversible or
-  genuinely ambiguous decisions, setting `Blocked` with the question in the log rather than
-  guessing.
-- **Model:** the cheapest that reliably does the task: fast (Haiku/Sonnet) for **S**, Sonnet
-  for **M**, most capable (Opus/Fable) for **L** / design work while you're present. Broad or
-  mechanical sub-jobs can go to cheaper **subagents** (`CLAUDE.md` → Subagents).
-- **Overnight:** S/M tasks only, one per run (or one `multi-task` batch of S tasks), finished
-  early enough for the usage window to reset. Prompts and guardrails are in
-  [`OVERNIGHT.md`](OVERNIGHT.md).
-
-**Commands** (full spec: [`COMMANDS.md`](COMMANDS.md)):
-- *Board maintenance* (lightweight: a `chore/` branch + PR on dev-hub, no log or Status):
-  `add-repo`, `refresh-overview`, `scan-repo` (appends new candidate tasks and refreshes the
-  master), `new-task`, `check-board` (consistency report).
-- *Task lifecycle* (full protocol): `plan-task` (one ID, or several to plan a batch),
-  `multi-task` (several simple tasks, one PR), `pickup-task`, `mark-done` (one ID or a batch).
-- **Plan first:** prefix anything with `plan` (e.g. "plan scan-repo example-repo", "plan EX-2") for
-  an ephemeral proposal with no commits; say "go" to run it. `plan-task` is the one that
-  *saves* a plan.
+The rules behind them are in [`CLAUDE.md`](CLAUDE.md), the only full copy. Every command is
+specified in [`COMMANDS.md`](COMMANDS.md).
 
 ## 5. Instructions and memory
 
@@ -311,42 +300,9 @@ and at most 5 tasks. It gets one branch (`task/EX-3+EX-4+EX-5-…`) and **one PR
   its next task; that's expected.
 - **Learnings:** during a task, lasting findings go in the log as `Learning:` lines.
   `mark-done` promotes them into the master's `## Learnings` (≈15 max; `scan-repo` prunes).
-- **Changing the workflow:** edit `CLAUDE.md` first, then its summaries (this README,
-  `COMMANDS.md`, the masters' compact protocol), and add a line to `DECISIONS.md`.
-
-## 6. Examples
-
-**From claude.ai/code** (dev-hub + target repo attached; machine off or you're mobile):
-> "plan-task **EX-2**."
-
-Claude reads the board, clones `example-repo` and proposes a plan. Once you agree, it saves
-the plan to `log/EX-2.md`, sets `WIP`, branches, syncs `example-repo`'s `CLAUDE.md`, adds the CI
-workflow,
-and opens a draft PR you can review from your phone.
-
-> "pickup-task **EX-4**. Answer to the open question: sort `--json` output by due date."
-
-> "mark-done **EX-2**." (after you merge)
-
-> "multi-task **example-repo**." Claude proposes, say, EX-3, EX-4 and EX-5. You
-> confirm, and one PR comes back with a section per task. After merging:
-> "mark-done EX-3 EX-4 EX-5".
-
-> "new-task example-repo: add a `CHANGELOG.md`. Effort S."
-
-**From a Claude Project (handback mode)** (any device, no push access):
-> "do task **EX-3**." … "looks good"
-
-Claude checks for unfinished work and whether dev-hub changed, does the work, shows you the PR,
-and on "looks good" runs `mark-done` and hands back one zip + one `.patch` per repo. You apply
-each with `git am`, push, open the PR, and re-sync the Project.
-
-**From Claude Code** (at your machine):
-> In the `dev-hub` checkout: "Pull latest, then plan-task **EX-4** in the `example-repo` repo next
-> door. Branch + PR."
-
-> Hand off between surfaces: start `EX-5` from claude.ai/code while you're out, then at your
-> machine: "pickup-task EX-5: run the suite and finish it off."
+- **Changing the workflow:** edit `CLAUDE.md` first, then its summaries (this README, the
+  guides in `docs/`, `COMMANDS.md`, the masters' compact protocol), and add a line to
+  `DECISIONS.md`.
 
 ---
 

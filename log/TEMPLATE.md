@@ -1,7 +1,7 @@
 # <TASK-ID> — <short title>
 
 - **Repo:** <target repo>
-- **Branch:** `task/<ID>-<slug>` (batch: `task/<ID>+<ID>+…-<slug>`)
+- **Branch:** `task/<ID>-<slug>` (batch: `task/<ID>+<ID>+…-<slug>`; feature: `feature/<ID>-<slug>`)
 - **Batch:** <none, or sibling IDs · branch · PR. Mark "dropped from batch" if this task was
   pulled out as Blocked>
 - **PR / patch:** <PR link, or "patch delivered <date>">
@@ -13,11 +13,13 @@
 <paste the task's row/acceptance criteria from TASK_BOARD.md>
 
 ## Plan
-<the finalized plan: approach, sub-steps, risks. Written by `plan-task` (or before heavy work
-on any non-trivial/unattended task) and committed to dev-hub `main` as the task's first log
-commit, or to the designated branch + PR if the session is branch-restricted>
+<the plan: approach, sub-steps, risks, and who does each sub-step (main model, or a Haiku /
+Sonnet subagent). Agreed with the owner by `plan-task`, or written by `run-task` on its own;
+committed to dev-hub `main` as the task's first log commit before heavy work, or to the
+designated branch + PR if the session is branch-restricted>
 
 ## Checklist
+<!-- a feature's log: one item per subtask, e.g. "- [ ] EX-FA1: <subtask>" -->
 - [ ] <sub-step 1>
 - [ ] <sub-step 2>
 - [ ] <sub-step 3>
