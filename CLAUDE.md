@@ -13,8 +13,9 @@ The private control/planning hub for the owner's development work. It holds the 
 decisions (`DECISIONS.md`), master copies of each target repo's instruction file
 (`repos/<name>/CLAUDE.md`), and the PR template every task PR follows (`templates/`).
 `projects/` holds the research layer above the boards: one file per multi-month research
-project, plus a portfolio index. `README.md` is the human overview (surfaces and access,
-setup); `docs/` holds the guides (`docs/TASKS.md`, `docs/FEATURES.md`, `docs/PROJECTS.md`).
+project, plus a portfolio index. `README.md` is the human overview (the levels of work,
+commands, setup); `docs/` holds the guides (`docs/TASKS.md`, `docs/FEATURES.md`,
+`docs/PROJECTS.md`, and `docs/SURFACES.md` for where dev-hub runs, including handback mode).
 `examples/` holds a filled-in sample for reference only (never edit it as live state);
 `AGENTS.md` points other agents here; `ADAPTING.md` covers porting to other agents. It
 contains **no application code**; it's planning and instructions only.
@@ -64,7 +65,7 @@ context) and always:
 
    An interactive `plan <ID>` dry run stays ephemeral, since the owner is present.
 4. **PR.** Open a draft PR for that branch (a patch/diff only when the session can't push;
-   see `README.md` → Surfaces and access). The description follows dev-hub's
+   see `docs/SURFACES.md`). The description follows dev-hub's
    `templates/PULL_REQUEST_TEMPLATE.md` (read it from dev-hub; it isn't copied into target
    repos): the task **ID**, what changed, why, how it was tested, and the definition-of-done
    check.
@@ -338,8 +339,9 @@ pushes, PRs and bookkeeping**. Delegate only when it's cheaper than doing it you
   leave tasks whose definition of done needs a build or tests to a surface with a shell. A
   **claude.ai Project in handback mode** reads dev-hub read-only (synced from `main`) and hands
   back zips + patches, following `templates/PROJECT_INSTRUCTIONS.md` (which also defines its
-  `how-to` command). Computer use can't type into terminals or IDEs, so it isn't a way to run
-  git (see `README.md` → Surfaces and access).
+  `how-to` command). It runs tasks, batches, board maintenance and projects, but **not
+  features**: a patch can't carry the merges a feature branch needs. Computer use can't type
+  into terminals or IDEs, so it isn't a way to run git (see `docs/SURFACES.md`).
 - **Plan first when present:** if asked to "plan &lt;command or ID&gt;", do the read-only part and
   propose the changes in chat with no commits; execute only on "go"/"run". That preview is
   ephemeral. `plan-task <ID>` also discusses first and always waits for the owner's go, but it

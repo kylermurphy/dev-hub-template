@@ -48,7 +48,7 @@ one). A batch: `multi-task <ID> <ID> …` (or
 A feature: `new-feature <repo>` → `plan-task <feature ID>` → `pickup-task <subtask ID>` for
 each subtask → the feature PR merges → `mark-done <feature ID>` (`CLAUDE.md` → Features).
 
-**Where they run** (details: `README.md` → Surfaces and access). Reading and analysis work
+**Where they run** (details: `docs/SURFACES.md`). Reading and analysis work
 from any session: public repos clone anywhere and `repo_stats.sh` runs in the cloud. Pushing
 to a **private** repo, including dev-hub itself (every command here writes to dev-hub), needs
 a session that can reach it:

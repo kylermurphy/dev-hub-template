@@ -7,18 +7,21 @@ Projects are mostly for you, and they're structured so agents can read them and 
 The rules are in [`CLAUDE.md`](../CLAUDE.md) → Projects, and the commands in
 [`COMMANDS.md`](../COMMANDS.md) → Projects.
 
-## Three levels of work
+## Projects and the boards
 
-| Level | Answers | Horizon | Lives in | Guide |
-| --- | --- | --- | --- | --- |
-| **Project** | why: the science question and what counts as success | months | `projects/<name>.md` | this one |
-| **Feature** | what code, built as a whole on one branch | days to weeks | `FEATURE_BOARD.md` | [`FEATURES.md`](FEATURES.md) |
-| **Task** | how: one self-contained change | about a session | `TASK_BOARD.md` | [`TASKS.md`](TASKS.md) |
+A project is the top of the three levels of work ([README → Three levels of
+work](../README.md#three-levels-of-work-use-what-fits)): the project answers *why* (the science
+question and what counts as success, over months), a [feature](FEATURES.md) *what* code gets
+built as a whole, and a [task](TASKS.md) *how*, one change at a time.
 
 A project's work packages link down to the tasks and features that do their code work, by board
 ID (`EX-7`, `EX-FA`). The boards don't link back up, so the only place to update is the
 project. Research that isn't code (reading, analysis, writing) stays in the project as work
 packages and next actions.
+
+**Projects on their own.** A project doesn't need any tracked repo or board. With `repos: []`
+and `—` in every Links cell, it's a structured research notebook: goals, plans, todos,
+references and a log. Link it to tasks and features later, if code work turns up.
 
 ## The files
 
@@ -107,7 +110,9 @@ is `HT-`. A project ID can't be a repo prefix, so `HEAT` and `HT-` differ.)
   metadata, sections, objectives, work packages and links, and that the index matches.
 
 Project edits go straight to `main`: no branch, log or board status. The file is its own
-record.
+record. In a branch-restricted session they go to the session's branch and its PR instead, and
+a Claude Project in handback mode hands them back as a dev-hub patch
+([`SURFACES.md`](SURFACES.md)).
 
 ## Making a project easy to plan from
 

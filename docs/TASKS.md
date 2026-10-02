@@ -6,13 +6,25 @@ how tasks run day to day. The rules themselves are in [`CLAUDE.md`](../CLAUDE.md
 protocol, and every command is specified in [`COMMANDS.md`](../COMMANDS.md). For larger work
 that needs its own branch for days or weeks, see [`FEATURES.md`](FEATURES.md).
 
+## How a task works
+
+- **dev-hub holds the record; the code stays in the target repo.** The task's row, plan and
+  log live in dev-hub. The work lands as a branch and a draft PR in the target repo.
+- **Each target repo carries a root `CLAUDE.md`,** copied from its dev-hub master
+  (`repos/<name>/CLAUDE.md`) as the first commit of every task. It tells the session how to
+  build and test that repo, and what earlier tasks learned. Edit the master, never the copy.
+- **Every task is self-contained.** Its board row (with the definition of done) and its log are
+  enough for any later session, on any surface, to pick it up without the original chat. See
+  [`SURFACES.md`](SURFACES.md) for where tasks can run.
+
 ## The board
 
-[`TASK_BOARD.md`](../TASK_BOARD.md) has one section per repo, and each row is a task:
+[`TASK_BOARD.md`](../TASK_BOARD.md) groups tasks by repo, with one section per tracked repo.
+Each row is a task:
 - an ID, e.g. `EX-1`;
 - a type;
-- an effort: **S** ≈ under an hour · **M** ≈ a session · **L** ≈ multi-session, or needs a
-  design call first;
+- an effort: **S** ≈ under an hour · **M** ≈ a focused session · **L** ≈ multi-session, or
+  needs a design call first;
 - a **definition of done**, which is the task's acceptance test.
 
 Add work with `new-task <repo>` or by editing the table. `scan-repo <name>` reads a repo and
@@ -23,6 +35,26 @@ waiting on a decision · 🛑 `Usage-stopped` paused by usage limits · 🟢 `Do
 shows the icon with the word; `TASK_LOG.md` and the logs use the word alone.
 
 ## A task, end to end
+
+```mermaid
+flowchart TD
+  todo["<b>dev-hub</b><br/>⏩ Todo: a row on TASK_BOARD.md"]
+  todo -->|"plan-task<br/>plan in chat, wait for your go"| plan
+  todo -->|"run-task<br/>Claude plans it (S/M)"| plan
+  plan["<b>dev-hub</b><br/>🟠 WIP: plan saved to log/ID.md"] --> work
+  work["<b>target repo</b><br/>branch task/ID-slug<br/>sync CLAUDE.md, do the work<br/>open a draft PR<br/><i>log kept current in dev-hub</i>"]
+  work -->|"stops"| stop["<b>dev-hub</b><br/>‼️ Blocked: question in the log<br/>or 🛑 Usage-stopped"]
+  stop -->|"pickup-task"| work
+  work --> review["<b>target repo</b><br/>you review and merge the PR"]
+  review -->|"mark-done"| done["<b>dev-hub</b><br/>🟢 Done: board and log updated,<br/>learnings saved to the repo's master"]
+  classDef hub fill:#e8f0fb,stroke:#4a6fa5,color:#1b1b1b
+  classDef repo fill:#fcefdc,stroke:#b8782f,color:#1b1b1b
+  class todo,plan,stop,done hub
+  class work,review repo
+```
+
+Each box says where the step happens: blue in dev-hub (the board, log and masters), orange in
+the target repo (the branch and PR).
 
 1. **Plan it, one of two ways.**
    - **`plan-task <ID>`:** Claude posts a plan in chat and **waits for your go**. You refine it
@@ -61,10 +93,12 @@ at most 5 tasks. It gets one branch (`task/EX-3+EX-4+EX-5-…`) and **one PR**.
 
 ## Defaults
 
-- **Handback:** a draft PR; a patch/diff only when the session can't push.
-- **Autonomy:** when you're away, Claude goes to a draft. It stops only for irreversible or
-  genuinely ambiguous decisions, setting `Blocked` with the question in the log rather than
-  guessing.
+- **Handback:** a draft PR; a patch/diff only when the session can't push (a Claude Project in
+  handback mode: [`SURFACES.md`](SURFACES.md)).
+- **Autonomy:** `run-task`, `multi-task`, `pickup-task` and overnight runs carry on without you
+  and go to a draft PR. They stop only under [`CLAUDE.md`](../CLAUDE.md) → When to stop and
+  ask: they ask in chat if you're there, and otherwise set `Blocked` with the question in the
+  log rather than guessing.
 - **Model:** the cheapest model that reliably does the task:
   - **S**: fast (Haiku or Sonnet);
   - **M**: Sonnet;
@@ -77,26 +111,23 @@ at most 5 tasks. It gets one branch (`task/EX-3+EX-4+EX-5-…`) and **one PR**.
 
 ## Commands
 
-Full spec: [`COMMANDS.md`](../COMMANDS.md).
-- *Board maintenance* is lightweight: a `chore/` branch + PR on dev-hub, with no log or Status.
-  - `add-repo`, `refresh-overview`;
-  - `scan-repo`: appends new candidate tasks and refreshes the master;
-  - `new-task`;
-  - `new-feature`: see [`FEATURES.md`](FEATURES.md);
-  - `check-board`: consistency report, also run in CI on every PR.
-- *Task lifecycle* follows the full protocol:
-  - `plan-task`: one ID, or several to plan a batch; always waits for your go;
-  - `run-task`: Claude plans and runs one S/M task without waiting;
-  - `multi-task`: several simple tasks, one PR;
-  - `pickup-task`;
-  - `mark-done`: one ID or a batch.
-- **Plan first:** prefix anything with `plan` (e.g. "plan scan-repo example-repo", "plan EX-2") for
-  an ephemeral proposal with no commits; say "go" to run it. `plan-task` is the one that
-  *saves* a plan.
+Every command is in the [README's command table](../README.md#commands) and specified in
+[`COMMANDS.md`](../COMMANDS.md). The ones that run tasks follow the full protocol:
+- `plan-task <ID> …`: one ID, or several to plan a batch; always waits for your go;
+- `run-task <ID>`: Claude plans and runs one S/M task without waiting;
+- `multi-task <ID> <ID> …`: several simple tasks, one PR;
+- `pickup-task <ID>`: resumes from the log's Next step;
+- `mark-done <ID> …`: one ID or a batch, after the merge.
+
+Board maintenance (`add-repo`, `scan-repo`, `new-task`, …) is lightweight: a `chore/` branch +
+PR on dev-hub, with no log or Status. Prefix any command with `plan` (e.g. "plan scan-repo
+example-repo") for a proposal with no commits; say "go" to run it. `plan-task` is the one that
+*saves* a plan.
 
 ## Examples
 
-**From claude.ai/code** (dev-hub + target repo attached; machine off or you're mobile):
+**From Claude Code on the web or in the Claude app** (dev-hub + target repo attached; machine
+off or you're mobile):
 > "plan-task **EX-2**."
 
 Claude reads the board, clones `example-repo` and proposes a plan. Once you agree, it saves the plan
@@ -121,9 +152,10 @@ and opens a draft PR you can review from your phone.
 
 Claude checks for unfinished work and whether dev-hub changed, does the work, shows you the PR,
 and on "looks good" runs `mark-done` and hands back one zip + one `.patch` per repo. You apply
-each with `git am`, push, open the PR, and re-sync the Project.
+each with `git am`, push, open the PR, and re-sync the Project. Setup and details:
+[`SURFACES.md`](SURFACES.md) → Claude Project (handback mode).
 
-**From Claude Code** (at your machine):
+**From Claude Code on your computer:**
 > In the `dev-hub` checkout: "Pull latest, then plan-task **EX-4** in the `example-repo` repo
 > next door. Branch + PR."
 
