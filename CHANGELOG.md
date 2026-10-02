@@ -3,6 +3,41 @@
 All notable changes to the dev-hub template. Versions follow [semver](https://semver.org/);
 the current version is in [`VERSION`](VERSION).
 
+## [0.3.0] — 2026-10-02
+
+A reworked README, a guide to where dev-hub runs, workflow diagrams, and projects in handback
+mode.
+
+### Added
+- **`docs/SURFACES.md`**, a fourth guide: what each Claude surface can reach, how to set it up,
+  and its caveats, including handback mode (a Claude Project) in full. It moved out of the
+  README.
+- **Diagrams**: the task lifecycle in `docs/TASKS.md`, and the feature lifecycle and a feature
+  branch (`feature/EX-FA-calendar-sync`, with `main` merged in) in `docs/FEATURES.md`. Each box
+  says whether that step happens in dev-hub or the target repo.
+- **Projects in handback mode**: `new-project`, `plan-project`, `review-projects` and everyday
+  project edits run in a Claude Project and come back as a dev-hub patch.
+- Links to the four blog posts about dev-hub (dev-hub, handback mode, features, projects) at
+  the top of the README.
+
+### Changed
+- The README is a short overview: links to the three boards, what dev-hub does, the three
+  levels of work and how to combine them (each works on its own), the Plan → Launch → Track →
+  Land loop for tasks and features, a command table, a summary of where it runs, setup, and
+  memory (a feature has one log and one `TASK_LOG.md` row, and shares the repo's learnings with
+  tasks).
+- Handback mode says what runs there: tasks, batches, board maintenance and projects, but
+  **not features**, since a patch can't carry a feature branch's merges. `plan-task` and
+  `plan-project` wait for the owner's go there too; naming a task means `run-task`.
+- `docs/TASKS.md` groups tasks by repo and points to the README's command table;
+  `docs/PROJECTS.md` covers projects with no tracked repos, and where project edits go in a
+  branch-restricted session or handback mode.
+- Pointers to the old README sections (`CLAUDE.md`, `COMMANDS.md`, `ADAPTING.md`,
+  `examples/README.md`) now go to `docs/SURFACES.md` or `docs/TASKS.md`.
+- `DECISIONS.md`: two new rows (the README and guides, and handback mode's scope).
+
+Synced from dev-hub `4d21ce3`.
+
 ## [0.2.0] — 2026-09-29
 
 Features, research projects, `run-task`, and a scripted, CI-checked board.
