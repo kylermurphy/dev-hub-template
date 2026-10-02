@@ -5,10 +5,26 @@ Project knowledge from `main`. Target repos must be public: they're cloned fresh
 (a private target repo can't be worked on here). dev-hub's `CLAUDE.md` and `COMMANDS.md`
 still govern every command, with the substitutions below.
 
+## What runs here
+- **Tasks and batches**: `run-task` (or naming a task, "do task EX-4"), `plan-task`,
+  `multi-task`, `pickup-task`, `mark-done`.
+- **Board maintenance**: `add-repo`, `refresh-overview`, `scan-repo`, `new-task`,
+  `new-feature` (adding a feature to the board is fine), `check-board`.
+- **Projects**: `new-project`, `plan-project`, `review-projects`, and everyday project edits
+  ("<ID> log: …"). They only change dev-hub.
+- **Not features.** A feature's subtasks go onto a long-lived branch with `main` merged in
+  before each one, which a patch can't carry, and a subtask is never finished work to hand
+  back. Given a feature or subtask ID (`<PREFIX>F<letter>`, `<PREFIX>F<letter><n>`) to plan,
+  pick up or close, say that features need Claude Code (on the web or on the user's computer)
+  and stop.
+
 ## Work without asking
 Carry every command straight through: checks, work, bookkeeping, `wc/` writes and handbacks.
 Don't ask whether to proceed, offer options, or wait for "go". Stop only for:
-- the PR confirmation before `mark-done` (see Finishing);
+- `plan-task` and `plan-project`, which post their plan and **wait for the user's explicit go**,
+  as dev-hub's `CLAUDE.md` requires (answers to questions aren't a go);
+- the confirmation before a handback, which for a task also comes before `mark-done` (see
+  Finishing);
 - a decision the task can't make (it becomes `Blocked`);
 - another chat having the same repo `in progress`;
 - a sync-check mismatch that needs the user.
@@ -62,18 +78,22 @@ what changed, then each mismatch with how to fix it:
 - Target-repo branch + draft PR → patches + `PR.md` in `wc/<repo>/<branch>/`. The user opens
   the PR after the handback.
 - Board maintenance `chore/` branch + PR → `wc/dev-hub/` + PR text (with the branch name).
+- Project edits "straight to `main`" (project commands and everyday edits) → write to
+  `wc/dev-hub/projects/`, and hand back a dev-hub patch with its commit message. There's no
+  PR to confirm and no `mark-done`.
 - `mark-done` merge check → the user's confirmation of the PR. Record it as
   `Done (PR confirmed <date>)` in `TASK_LOG.md` and as `(PR confirmed <date>)` on the log's
   PR line. The board Status is `🟢 Done` (icon + word, per `CLAUDE.md`).
 
-## Finishing a task or maintenance command
-1. Show the changes and the `PR.md` / PR text. Ask the user to confirm the PR looks good.
+## Finishing a task, maintenance or project command
+1. Show the changes and the `PR.md` / PR text (a project command: the changes and the commit
+   message). Ask the user to confirm they look good.
 2. On confirmation, say "Running `mark-done <ID>`" and run it in `wc/` (tasks only).
 3. Hand back **one zip per repository**. Each zip holds:
    - the changed files at their repo paths;
    - a `.patch`;
    - the PR text and branch name (target repos, board maintenance), or the commit message
-     (dev-hub task bookkeeping, which goes straight to `main`);
+     (dev-hub task bookkeeping and project edits, which go straight to `main`);
    - a list of files to delete, if any.
 
    Also send each `.patch` **as its own file**, named `<repo>-<ID or command>.patch`, so it
@@ -97,8 +117,9 @@ the checks.
 > Claude runs dev-hub tasks here but can't push to GitHub. Claude does the work; you commit it.
 >
 > **The loop**
-> 1. Name a task or command: `do task EX-4`, `plan-task EX-4`,
->    `multi-task EX-4 EX-5`, `scan-repo example-repo`.
+> 1. Name a task or command: `do task EX-4` (Claude plans it and goes), `plan-task EX-4`
+>    (Claude posts a plan and waits for your go), `multi-task EX-4 EX-5`,
+>    `scan-repo example-repo`, or a project command such as `new-project` or `plan-project`.
 > 2. Claude checks for unfinished work (🚩) and whether dev-hub changed since the last run.
 > 3. Claude clones the repo, does the work, keeps the bookkeeping in the Project's working
 >    copy (`wc/`), and shows you the PR.
@@ -129,11 +150,12 @@ the checks.
 >   every chat.
 > - Re-sync the Project after committing; the next chat checks that it landed.
 > - If a build or test can't run here, its checks are left in the PR for you.
+> - Features need Claude Code (on the web or your computer); this Project doesn't run them.
 
 ## Applying a patch (user; printed with every handback)
 1. **Open the repo in GitHub Desktop.** Pull `main`, then switch to the right branch:
    - target repo: create the branch named in `PR.md`, from `main`;
-   - dev-hub task bookkeeping: stay on `main`;
+   - dev-hub task bookkeeping or project edits: stay on `main`;
    - board maintenance: create the `chore/` branch named in the PR text, from `main`.
 2. **Open a command line there:** Repository → **Open in Command Prompt**.
 3. **Apply the patch**, one command on its own line, with the full path to the downloaded file:

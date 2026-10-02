@@ -4,9 +4,9 @@ A **feature** is larger work in one repo that stays on its own branch until it's
 whole: a new module, a model change that has to be validated before it replaces the old one, an
 API change that only makes sense in full. It's broken into **subtasks** that are committed
 straight onto the feature branch, and it reaches `main` in one PR at the end. Features live on
-[`FEATURE_BOARD.md`](../FEATURE_BOARD.md). The rules are in [`CLAUDE.md`](../CLAUDE.md) →
-Features, and the commands in [`COMMANDS.md`](../COMMANDS.md). For everyday work, see
-[`TASKS.md`](TASKS.md).
+[`FEATURE_BOARD.md`](../FEATURE_BOARD.md), grouped by repo. The rules are in
+[`CLAUDE.md`](../CLAUDE.md) → Features, and the commands in [`COMMANDS.md`](../COMMANDS.md).
+For everyday work, see [`TASKS.md`](TASKS.md).
 
 ## Task or feature?
 
@@ -62,6 +62,27 @@ The parts of a block:
 
 ## A feature, end to end
 
+```mermaid
+flowchart TD
+  add["<b>dev-hub</b><br/>⏩ Todo: new-feature adds a block<br/>on FEATURE_BOARD.md"]
+  add -->|"plan-task<br/>design and subtask order, wait for your go"| plan
+  plan["<b>dev-hub</b><br/>🟠 WIP: plan saved to log/ID.md"] --> start
+  start["<b>target repo</b><br/>branch feature/ID-slug<br/>one draft PR"] --> sub
+  sub["<b>target repo</b><br/>pickup-task: the next subtask<br/>merge main in, commit with the subtask ID<br/>run the checks<br/><i>board and log updated in dev-hub</i>"]
+  sub -->|"more subtasks"| sub
+  sub -->|"a subtask needs your decision"| blocked["<b>dev-hub</b><br/>subtask ‼️ Blocked, question in the log<br/>the others carry on"]
+  blocked -->|"your answer, then pickup-task"| sub
+  sub -->|"all subtasks done"| ready["<b>target repo</b><br/>Claude marks the PR ready<br/>you review and merge it"]
+  ready -->|"mark-done"| done["<b>dev-hub</b><br/>🟢 Done: board and log updated,<br/>learnings saved to the repo's master"]
+  classDef hub fill:#e8f0fb,stroke:#4a6fa5,color:#1b1b1b
+  classDef repo fill:#fcefdc,stroke:#b8782f,color:#1b1b1b
+  class add,plan,blocked,done hub
+  class start,sub,ready repo
+```
+
+Each box says where the step happens: blue in dev-hub (the board, log and masters), orange in
+the target repo (the branch and PR).
+
 1. **Add it:** `new-feature <repo>`. Describe the feature; Claude writes the block with the
    repo's next letter and proposes the subtasks.
 2. **Plan and start it:** `plan-task <feature ID>`. You agree the design and the order of the
@@ -69,7 +90,9 @@ The parts of a block:
    `run-task`). Then it:
    - creates `feature/<ID>-<slug>` in the target repo, with the `CLAUDE.md` sync as its first
      commit;
-   - saves the plan to `log/<ID>.md`, adds a `TASK_LOG.md` row and sets the feature `WIP`;
+   - saves the plan to `log/<ID>.md`, adds a `TASK_LOG.md` row and sets the feature `WIP`.
+     That's the feature's only log and row: subtasks get none of their own, and the log keeps
+     a checklist item per subtask;
    - opens **one draft PR** into `main` straight away. CI runs on every push, so you can
      watch the combined diff grow.
 3. **Work the subtasks:** `pickup-task <subtask ID>`, or `pickup-task <feature ID>` for the
@@ -81,11 +104,37 @@ The parts of a block:
    - sets the subtask `Done`, ticks it in the feature log and names the next one.
 
    Any session or surface can pick up where the last one stopped.
-4. **Review:** when every subtask is done, the PR is marked ready. Review it as a whole, or
+4. **Review:** when every subtask is done, Claude marks the PR ready. Review it as a whole, or
    commit by commit, since the subtask-ID prefixes group the commits.
 5. **Land:** merge the PR, then run `mark-done <feature ID>`. It checks the merge and that
    every subtask is `Done`, sets the feature `Done`, and promotes any `Learning:` notes into
    the repo's master.
+
+Features need a surface that can push: Claude Code on the web, in the Claude app, or on your
+computer. A Claude Project in handback mode doesn't run them ([`SURFACES.md`](SURFACES.md)).
+
+### The feature branch
+
+The branch lives for the whole feature. `main` is merged in before each subtask, so the branch
+doesn't drift, and the draft PR opened at the start shows the combined diff growing, with CI on
+every push. Nothing reaches `main` until you merge that one PR:
+
+```mermaid
+gitGraph
+  commit id: "main"
+  branch feature/EX-FA-calendar-sync
+  checkout feature/EX-FA-calendar-sync
+  commit id: "sync CLAUDE.md"
+  commit id: "EX-FA1: due-date model"
+  checkout main
+  commit id: "other work"
+  checkout feature/EX-FA-calendar-sync
+  merge main id: "merge main in"
+  commit id: "EX-FA2: export --ics"
+  commit id: "EX-FA3: import"
+  checkout main
+  merge feature/EX-FA-calendar-sync id: "feature PR merged"
+```
 
 ## Stops and changes of plan
 

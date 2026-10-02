@@ -52,7 +52,7 @@ tool-agnostic: cheap model for routine work, S/M tasks only unattended, one task
 batch) per run, persist the plan first, resume from the log.
 
 ### 4. Model tiers
-Model names appear in `CLAUDE.md` (Subagents), `README.md` (Defaults) and `OVERNIGHT.md`.
+Model names appear in `CLAUDE.md` (Subagents), `docs/TASKS.md` (Defaults) and `OVERNIGHT.md`.
 Map "fast / mid / most-capable" to your provider's line-up; the effort → tier rule stays.
 
 ## What stays the same

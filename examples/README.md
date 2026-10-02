@@ -106,8 +106,9 @@ PR.
   `../CLAUDE.md` → Batches.
 - **No push access (Claude Project, handback mode):** the same steps run against a working copy
   in the Project. At the end you get zips + `git am` patches to commit yourself, and
-  `mark-done` records `Done (PR confirmed <date>)`. See `../README.md` → Claude Project
-  (handback mode).
+  `mark-done` records `Done (PR confirmed <date>)`. See
+  [`../docs/SURFACES.md`](../docs/SURFACES.md) → Claude Project (handback mode). Features
+  don't run there.
 - **Bigger work, a feature:** `new-feature example-repo` adds a block like
   [`FEATURE_BOARD.example.md`](FEATURE_BOARD.example.md). `plan-task EX-FA` agrees the design,
   waits for your go, then creates one `feature/EX-FA-<slug>` branch, one log and one draft PR.
